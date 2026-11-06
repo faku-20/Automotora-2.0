@@ -13,12 +13,16 @@ class Usuario {
         $this->conexion = $db->conectar();
     }
 
-    // Buscar un usuario por su nombre de usuario
-    public function buscarUsuario($usuario) {
+    // Busca un usuario por su nombre de usuario en la base de datos si esta registrado
 
+    public function buscarUsuario($usuario) {
+        
+    //creamos la consulta a la bd, y la guarda en la variable $sql
         $sql = "SELECT * FROM usuarios WHERE usuario = ?";
 
+        // utiliza la conexión que creamos anteriormente para preparar la consulta anterior.
         $consulta = $this->conexion->prepare($sql);
+        //
         $consulta->bind_param("s", $usuario);
         $consulta->execute();
 
@@ -30,7 +34,7 @@ class Usuario {
         return $datos;
     }
 
-    // Comprobar usuario y contraseña
+    // Comprobar si el usuario y contraseña existen en la bd
     public function iniciarSesion($usuario, $clave) {
 
         $datos = $this->buscarUsuario($usuario);
@@ -45,7 +49,7 @@ class Usuario {
         return false;
     }
 
-    // Modificar los datos del perfil
+    // Modifica los datos del perfil del usuario
     public function modificarPerfil($id, $nombre, $apellido, $nuevaClave = "") {
 
         if ($nuevaClave != "") {
