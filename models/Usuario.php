@@ -17,14 +17,16 @@ class Usuario {
 
     public function buscarUsuario($usuario) {
         
-    //creamos la consulta a la bd, y la guarda en la variable $sql
+    //preparamos la consulta a la bd, y la guarda en la variable $sql
         $sql = "SELECT * FROM usuarios WHERE usuario = ?";
 
         // utiliza la conexión que creamos anteriormente para preparar la consulta anterior.
         $consulta = $this->conexion->prepare($sql);
-        //
+        //utilizamos s como parametro ya q $usuario contiene el tipo de usuario q es un string
         $consulta->bind_param("s", $usuario);
         $consulta->execute();
+
+        //obtengo todos los resultados con get_result, y luego con fetch_assoc los recupero en un array asociativo
 
         $resultado = $consulta->get_result();
         $datos = $resultado->fetch_assoc();
