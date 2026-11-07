@@ -11,7 +11,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION["id"] = $resultado["id"];
         $_SESSION["usuario"] = $resultado["usuario"];
         $_SESSION["tipo_usuario"] = $resultado["tipo_usuario"];
-        echo "Inicio de sesion correcto";
+        session_regenerate_id (true); 
+        if ($_SESSION["tipo_usuario"] == "administrador") {
+            header("Location: panelAdmin.php");
+            exit;
+        }elseif ($_SESSION["tipo_usuario"] == "comprador") {
+           header("Location: panelComprador.php");
+         exit;
+        }
+       
     }else{
         echo "Inicio de sesión incorrecto, vuelva a intentarlo";
     }
