@@ -1,5 +1,11 @@
 <?php
 session_start();
+/*
+Evitamos que otra página pueda provocar una eliminación utilizando la sesión del administrador generando un token CSRF.
+*/
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+}
 
 if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
     header("Location: ../../public/index.php");
@@ -11,11 +17,6 @@ require_once __DIR__ . '/../../models/Auto.php';
 $auto = new Auto();
 $autos = $auto->listarAutos();
 ?>
-
-<!DOCTYPE html>
-<html lang="es">
-
-</html>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -51,7 +52,15 @@ $autos = $auto->listarAutos();
                     <td><?php echo $autito["color"]; ?></td>
                     <td><?php echo $autito["kilometros"]; ?></td>
                     <td><?php echo $autito["precio"]; ?></td>
-                    <td><a href="modificarAuto.php?id=<?= $autito['id'] ?>">Modificar</a></td>
+                    <td><a href="modificarAuto.php?id=<?= $autito['id'] ?>">Modificar</a>
+                        <form action="eliminarAuto.php" method="POST">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+                            <input type="hidden" name="id" value="<?= $autito['id'] ?>">
+                            <button type="submit" onclick="return confirm('¿Seguro que querés eliminar este automóvil?');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
                 </tr>
 
             <?php } ?>

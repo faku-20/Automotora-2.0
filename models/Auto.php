@@ -60,4 +60,20 @@ class Auto
         $consulta->close();
         return $resultado;
     }
+
+    public function eliminarAuto($id)
+    {
+        //creamos la consulta
+        $sql = "DELETE FROM autos WHERE id = ?";
+        //preparamos la consulta
+        $consulta = $this->conexion->prepare($sql);
+        //vinculamos el id
+        $consulta->bind_param("i", $id);
+        //ejecutamos la consulta
+        $resultado = $consulta->execute();
+        //cerramos la consulta
+        $consulta->close();
+        //retornamos el resultado
+        return $resultado;
+    }
 }

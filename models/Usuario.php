@@ -3,21 +3,24 @@
 
 require_once __DIR__ . '/Conexion.php';
 
-class Usuario {
+class Usuario
+{
 
     private $conexion;
 
     // Constructor
-    public function __construct() {
+    public function __construct()
+    {
         $db = new Conexion();
         $this->conexion = $db->conectar();
     }
 
     // Busca un usuario por su nombre de usuario en la base de datos si esta registrado
 
-    public function buscarUsuario($usuario) {
-        
-    //preparamos la consulta a la bd, y la guarda en la variable $sql
+    public function buscarUsuario($usuario)
+    {
+
+        //preparamos la consulta a la bd, y la guarda en la variable $sql
         $sql = "SELECT * FROM usuarios WHERE usuario = ?";
 
         // utiliza la conexión que creamos anteriormente para preparar la consulta anterior.
@@ -37,7 +40,8 @@ class Usuario {
     }
 
     // Comprobar si el usuario y contraseña existen en la bd
-    public function iniciarSesion($usuario, $clave) {
+    public function iniciarSesion($usuario, $clave)
+    {
 
         $datos = $this->buscarUsuario($usuario);
 
@@ -52,7 +56,8 @@ class Usuario {
     }
 
     // Modifica los datos del perfil del usuario
-    public function modificarPerfil($id, $nombre, $apellido, $nuevaClave = "") {
+    public function modificarPerfil($id, $nombre, $apellido, $nuevaClave = "")
+    {
 
         if ($nuevaClave != "") {
 
@@ -64,7 +69,6 @@ class Usuario {
 
             $consulta = $this->conexion->prepare($sql);
             $consulta->bind_param("sssi", $nombre, $apellido, $password, $id);
-
         } else {
 
             $sql = "UPDATE usuarios

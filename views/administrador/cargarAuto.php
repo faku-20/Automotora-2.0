@@ -24,7 +24,7 @@ if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
     require_once __DIR__ . '/../../models/Auto.php';
 
     $auto = new Auto();
-    
+
     //trim elimina los espacios vacios al principio y al final de un texto
     //empy verifica q no esten vacios los campos
     //is_numeric verifica q solo se ingresen numeros
@@ -40,22 +40,21 @@ if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
             echo "La marca, el modelo y el color son obligatorios";
         } elseif (!is_numeric($kilometros) || !is_numeric($precio)) {
             echo "Los kilometros y el precio deben ser números";
-        }elseif ($kilometros < 0 || $precio <= 0){
+        } elseif ($kilometros < 0 || $precio <= 0) {
             echo "Los kilometros y el precio no pueden ser menor a 0, y el precio debe ser mayor a 0";
-        }elseif (filter_var($anio, FILTER_VALIDATE_INT) === false) {
-            echo "El año debe ser un numero entero";            
-        }elseif ($anio <1886 || $anio > 2026){
-            echo "El año debe estar entre 1886 y 2026";            
-        }elseif (filter_var($kilometros, FILTER_VALIDATE_INT) === false){
-            echo "Los kilometros deben ser un número entero";            
-        }else {
+        } elseif (filter_var($anio, FILTER_VALIDATE_INT) === false) {
+            echo "El año debe ser un numero entero";
+        } elseif ($anio < 1886 || $anio > 2026) {
+            echo "El año debe estar entre 1886 y 2026";
+        } elseif (filter_var($kilometros, FILTER_VALIDATE_INT) === false) {
+            echo "Los kilometros deben ser un número entero";
+        } else {
             //ahora llamamos la metodo cargar auto
             $resultado = $auto->cargarAuto($marca, $modelo, $anio, $color, $kilometros, $precio);
             //si $resultado = true, muestra el mesjaje de exito, sino pasa al else
-            if($resultado){
+            if ($resultado) {
                 echo "El auto fue cargado correctamente";
-                
-            }else {
+            } else {
                 echo "Error al cargar el auto";
             }
         }
