@@ -40,6 +40,7 @@ $autos = $auto->listarAutos();
                     <th>Color</th>
                     <th>Kilómetros</th>
                     <th>Precio</th>
+                    <th>Acción</th>
                 </tr>
             </thead>
 
@@ -70,6 +71,14 @@ $autos = $auto->listarAutos();
 
                         <td>
                             <?= htmlspecialchars($autito["precio"]) ?>
+                        </td>
+
+                        <!-- crea celda en la tupla con enlace a simularCompra.php-->
+                        <td>
+                            <!-- ejecuta PHP dentro del enlace, para pasar el id -->
+                            <a href="simularCompra.php?id=<?= $autito['id'] ?>">
+                            Simular compra
+                            </a>
                         </td>
                     </tr>
                 <?php } ?>
