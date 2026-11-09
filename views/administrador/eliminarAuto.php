@@ -17,7 +17,12 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 $tokenSesion = $_SESSION["csrf_token"] ?? "";
 $tokenRecibido = $_POST["csrf_token"] ?? "";
 
-if (!hash_equals($tokenSesion, $tokenRecibido)) {
+if (
+    !is_string($tokenRecibido) ||
+    !is_string($tokenSesion) ||
+    $tokenSesion === "" ||
+    !hash_equals($tokenSesion, $tokenRecibido)
+) {
     exit("Token CSRF inválido");
 }
 
@@ -34,7 +39,10 @@ if (!$autoEncontrado) {
     exit("El auto no existe");
 }
 $resultado = $auto->eliminarAuto($id);
+
+//unset elimina la copia del arreglo almacenada en la sesión.
 if ($resultado) {
+    unset($_SESSION["autos"]);
     header("Location: listarAutos.php");
     exit;
 } else {

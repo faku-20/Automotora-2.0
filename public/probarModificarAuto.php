@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../models/Auto.php';
+require_once __DIR__ . '/../views/administrador/modificarAuto.php';
 
 $auto = new Auto();
 

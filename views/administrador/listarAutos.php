@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 /*
 Evitamos que otra página pueda provocar una eliminación utilizando la sesión del administrador generando un token CSRF.
 */
@@ -15,7 +17,17 @@ if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
 require_once __DIR__ . '/../../models/Auto.php';
 
 $auto = new Auto();
-$autos = $auto->listarAutos();
+
+/*
+isset comprueba si ya existe el array en la sesion, si no existe el array hacemos la consilta a la bd y lo guardamos
+Despes utilizamos los autos almacenados en $_SESION["autos"]
+*/
+
+if (!isset($_SESSION["autos"])) {
+    $_SESSION["autos"] = $auto->listarAutos();
+}
+
+$autos = $_SESSION["autos"];
 ?>
 
 <!DOCTYPE html>
@@ -24,11 +36,18 @@ $autos = $auto->listarAutos();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Listado de automóviles - Automotora</title>
 </head>
 
 <body>
     <h2>Listado de automóviles</h2>
+    <?php
+    if (isset($_SESSION["mensaje"])) {
+        echo "<p>" . htmlspecialchars($_SESSION["mensaje"], ENT_QUOTES, "UTF-8") . "</p>";
+
+        unset($_SESSION["mensaje"]);
+    }
+    ?>
 
     <table border="1">
         <thead>
@@ -46,16 +65,16 @@ $autos = $auto->listarAutos();
             <?php foreach ($autos as $autito) {
             ?>
                 <tr>
-                    <td><?php echo $autito["marca"]; ?></td>
-                    <td><?php echo $autito["modelo"]; ?></td>
-                    <td><?php echo $autito["anio"]; ?></td>
-                    <td><?php echo $autito["color"]; ?></td>
-                    <td><?php echo $autito["kilometros"]; ?></td>
-                    <td><?php echo $autito["precio"]; ?></td>
-                    <td><a href="modificarAuto.php?id=<?= $autito['id'] ?>">Modificar</a>
+                    <td><?= htmlspecialchars((string) $autito["marca"], ENT_QUOTES, "UTF-8") ?></td>
+                    <td><?= htmlspecialchars((string) $autito["modelo"], ENT_QUOTES, "UTF-8") ?></td>
+                    <td><?= htmlspecialchars((string) $autito["anio"], ENT_QUOTES, "UTF-8") ?></td>
+                    <td><?= htmlspecialchars((string) $autito["color"], ENT_QUOTES, "UTF-8") ?></td>
+                    <td><?= htmlspecialchars((string) $autito["kilometros"], ENT_QUOTES, "UTF-8") ?></td>
+                    <td><?= htmlspecialchars((string) $autito["precio"], ENT_QUOTES, "UTF-8") ?></td>
+                    <td><a href="modificarAuto.php?id=<?= (int) $autito['id'] ?>">Modificar</a>
                         <form action="eliminarAuto.php" method="POST">
                             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
-                            <input type="hidden" name="id" value="<?= $autito['id'] ?>">
+                            <input type="hidden" name="id" value="<?= (int) $autito['id'] ?>">
                             <button type="submit" onclick="return confirm('¿Seguro que querés eliminar este automóvil?');">
                                 Eliminar
                             </button>

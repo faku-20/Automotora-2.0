@@ -7,6 +7,64 @@ if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
     header("Location: ../../public/index.php");
     exit;
 }
+
+if (empty($_SESSION["csrf_token"])) {
+    $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+}
+
+require_once __DIR__ . '/../../models/Auto.php';
+
+$auto = new Auto();
+//trim elimina los espacios vacios al principio y al final de un texto
+//empy verifica q no esten vacios los campos
+//is_numeric verifica q solo se ingresen numeros
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $tokenSesion = $_SESSION["csrf_token"] ?? "";
+    $tokenRecibido = $_POST["csrf_token"] ?? "";
+
+    if (
+        !is_string($tokenRecibido) ||
+        $tokenSesion === "" ||
+        !hash_equals($tokenSesion, $tokenRecibido)
+    ) {
+        exit("Token CSRF inválido");
+    }
+
+    $marca = trim($_POST["marca"]);
+    $modelo = trim($_POST["modelo"]);
+    $anio = $_POST["anio"];
+    $color = trim($_POST["color"]);
+    $kilometros = $_POST["kilometros"];
+    $precio = $_POST["precio"];
+    if (empty($marca) || empty($modelo) || empty($color)) {
+        echo "La marca, el modelo y el color son obligatorios";
+    } elseif (!is_numeric($kilometros) || !is_numeric($precio)) {
+        echo "Los kilometros y el precio deben ser números";
+    } elseif ($kilometros < 0 || $precio <= 0) {
+        echo "Los kilometros y el precio no pueden ser menor a 0, y el precio debe ser mayor a 0";
+    } elseif (filter_var($anio, FILTER_VALIDATE_INT) === false) {
+        echo "El año debe ser un numero entero";
+    } elseif ($anio < 1886 || $anio > 2026) {
+        echo "El año debe estar entre 1886 y 2026";
+    } elseif (filter_var($kilometros, FILTER_VALIDATE_INT) === false) {
+        echo "Los kilometros deben ser un número entero";
+    } else {
+        //ahora llamamos la metodo cargar auto
+        $resultado = $auto->cargarAuto($marca, $modelo, $anio, $color, $kilometros, $precio);
+        //si $resultado = true, muestra el mesjaje de exito, sino pasa al else
+        if ($resultado) {
+            unset($_SESSION["autos"]);
+
+            $_SESSION["mensaje"] = "El auto fue cargado correctamente";
+
+            header("Location: listarAutos.php");
+            exit;
+        } else {
+            echo "Error al cargar el auto";
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -20,51 +78,10 @@ if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
 
 <body>
 
-    <?php
-    require_once __DIR__ . '/../../models/Auto.php';
-
-    $auto = new Auto();
-
-    //trim elimina los espacios vacios al principio y al final de un texto
-    //empy verifica q no esten vacios los campos
-    //is_numeric verifica q solo se ingresen numeros
-
-    if ($_SERVER["REQUEST_METHOD"] === "POST") {
-        $marca = trim($_POST["marca"]);
-        $modelo = trim($_POST["modelo"]);
-        $anio = $_POST["anio"];
-        $color = trim($_POST["color"]);
-        $kilometros = $_POST["kilometros"];
-        $precio = $_POST["precio"];
-        if (empty($marca) || empty($modelo) || empty($color)) {
-            echo "La marca, el modelo y el color son obligatorios";
-        } elseif (!is_numeric($kilometros) || !is_numeric($precio)) {
-            echo "Los kilometros y el precio deben ser números";
-        } elseif ($kilometros < 0 || $precio <= 0) {
-            echo "Los kilometros y el precio no pueden ser menor a 0, y el precio debe ser mayor a 0";
-        } elseif (filter_var($anio, FILTER_VALIDATE_INT) === false) {
-            echo "El año debe ser un numero entero";
-        } elseif ($anio < 1886 || $anio > 2026) {
-            echo "El año debe estar entre 1886 y 2026";
-        } elseif (filter_var($kilometros, FILTER_VALIDATE_INT) === false) {
-            echo "Los kilometros deben ser un número entero";
-        } else {
-            //ahora llamamos la metodo cargar auto
-            $resultado = $auto->cargarAuto($marca, $modelo, $anio, $color, $kilometros, $precio);
-            //si $resultado = true, muestra el mesjaje de exito, sino pasa al else
-            if ($resultado) {
-                echo "El auto fue cargado correctamente";
-            } else {
-                echo "Error al cargar el auto";
-            }
-        }
-    }
-
-    ?>
     <h2>Cargar automóvil</h2>
 
-
     <form action="" method="POST">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
         <label for="marca">Marca:</label>
         <input type="text" id="marca" name="marca" required>
 
