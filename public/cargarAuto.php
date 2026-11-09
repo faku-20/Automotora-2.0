@@ -2,7 +2,7 @@
 session_start();
 
 if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
-    header("Location: index.php");
+    header("Location: ../../public/index.php");
     exit;
 }
 

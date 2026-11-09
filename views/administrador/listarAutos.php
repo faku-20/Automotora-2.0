@@ -1,3 +1,22 @@
+<?php
+session_start();
+
+if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
+    header("Location: ../../public/index.php");
+    exit;
+}
+
+require_once __DIR__ . '/../../models/Auto.php';
+
+$auto = new Auto();
+$autos = $auto->listarAutos();
+?>
+
+<!DOCTYPE html>
+<html lang="es">
+
+</html>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -8,12 +27,6 @@
 </head>
 
 <body>
-    <?php
-    require_once __DIR__ . '/../../models/Auto.php';
-
-    $auto = new Auto();
-    $autos = $auto->listarAutos();
-    ?>
     <h2>Listado de automóviles</h2>
 
     <table border="1">
@@ -25,18 +38,20 @@
                 <th>Color</th>
                 <th>Kilómetros</th>
                 <th>Precio</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($autos as $autito) { 
-                ?>
+            <?php foreach ($autos as $autito) {
+            ?>
                 <tr>
-                    <td><?php echo $autito["marca"];?></td>
-                    <td><?php echo $autito["modelo"];?></td>
-                    <td><?php echo $autito["anio"];?></td>
-                    <td><?php echo $autito["color"];?></td>
-                    <td><?php echo $autito["kilometros"];?></td>
-                    <td><?php echo $autito["precio"];?></td>
+                    <td><?php echo $autito["marca"]; ?></td>
+                    <td><?php echo $autito["modelo"]; ?></td>
+                    <td><?php echo $autito["anio"]; ?></td>
+                    <td><?php echo $autito["color"]; ?></td>
+                    <td><?php echo $autito["kilometros"]; ?></td>
+                    <td><?php echo $autito["precio"]; ?></td>
+                    <td><a href="modificarAuto.php?id=<?= $autito['id'] ?>">Modificar</a></td>
                 </tr>
 
             <?php } ?>
