@@ -1,5 +1,13 @@
-
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Verificamos que el usuario sea comprador
+if (($_SESSION["tipo_usuario"] ?? null) !== "comprador") {
+    header("Location: /public/index.php");
+    exit;
+}
 // este archivo se encarga de procesar y hacer una calculadora de financiación.
 
 require_once __DIR__ . '/../../models/Auto.php';
@@ -10,7 +18,7 @@ $auto = new Auto();
 $id = (int) $_GET["id"];
 
 // busca los demás datos del auto en la BD.
-$vehiculo = $auto->obtenerAutoPorId($id);
+$vehiculo = $auto->buscarAutoXID($id);
 
 // Verificar que el vehículo exista
 if (!$vehiculo) {
@@ -29,14 +37,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $cuotas = $_POST["cuotas"] ?? "";
 
     // se asegura que $entrega sea un valor valido y que $cuotas sea un numero natural.
-    if (!is_numeric($entrega) ||
+    if (
+        !is_numeric($entrega) ||
         !ctype_digit((string)$cuotas) ||
         $entrega < 0 ||
         $entrega > $vehiculo["precio"] ||
-        (int)$cuotas <= 0) {
+        (int)$cuotas <= 0
+    ) {
 
         $error = "Verificá la entrega inicial y la cantidad de cuotas.";
-
     } else { // calulo puro de las cuotas y saldo restante.
 
         $entrega = (float)$entrega;
@@ -92,8 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             min="0"
             max="<?= htmlspecialchars((string)$vehiculo["precio"]) ?>"
             step="0.01"
-            required
-        >
+            required>
 
         <br><br>
 
@@ -104,8 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             name="cuotas"
             id="cuotas"
             min="1"
-            required
-        >
+            required>
 
         <br><br>
 
@@ -123,7 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         <hr>
 
-        // desgloce con el plan de pagos.
+        <!-- desgloce con el plan de pagos. -->
         <h2>Resumen de la simulación</h2>
 
         <p>
@@ -161,4 +168,5 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <a href="verCatalogo.php">Volver al catálogo</a>
 
 </body>
+
 </html>

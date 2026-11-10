@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 //protegemos de q si no hay una sesion activa no se pueda entrar
 if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {

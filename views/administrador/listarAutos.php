@@ -10,14 +10,13 @@ if (empty($_SESSION["csrf_token"])) {
 }
 
 if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
-    header("Location: ../../public/index.php");
+    header("Location: /public/index.php");
     exit;
 }
 
 require_once __DIR__ . '/../../models/Auto.php';
 
 $auto = new Auto();
-
 /*
 isset comprueba si ya existe el array en la sesion, si no existe el array hacemos la consilta a la bd y lo guardamos
 Despes utilizamos los autos almacenados en $_SESION["autos"]

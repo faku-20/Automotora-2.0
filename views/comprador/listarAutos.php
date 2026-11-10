@@ -1,5 +1,14 @@
-
 <?php
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (($_SESSION["tipo_usuario"] ?? null) !== "comprador") {
+    header("Location: /public/index.php");
+    exit;
+}
+
 // este código se engarca de mostar una lista de autos en una tabla web, obteniendo los datos de la BD
 
 // importa el archivo de la clase Auto
@@ -13,22 +22,24 @@ $autos = $auto->listarAutos();
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Catálogo de vehículos</title>
 </head>
+
 <body>
 
     <h1>Catálogo de vehículos</h1>
 
     <!-- Agrega un enlace para volver al panel del comprador -->
-    <a href="panelComprador.php">Volver al panel</a>
+    <a href="/public/panelComprador.php">Volver al panel</a>
 
     <?php if (empty($autos)) { ?>
 
         <p>No hay vehículos disponibles.</p>
 
-    <!-- Si hay autos, "else" muestra la tabla con los datos -->
+        <!-- Si hay autos, "else" muestra la tabla con los datos -->
     <?php } else { ?>
 
         <table border="1">
@@ -75,9 +86,8 @@ $autos = $auto->listarAutos();
 
                         <!-- crea celda en la tupla con enlace a simularCompra.php-->
                         <td>
-                            <!-- ejecuta PHP dentro del enlace, para pasar el id -->
-                            <a href="simularCompra.php?id=<?= $autito['id'] ?>">
-                            Simular compra
+                            <a href="/public/simularCompra.php?id=<?= (int) $autito['id'] ?>">
+                                Simular compra
                             </a>
                         </td>
                     </tr>
@@ -88,4 +98,5 @@ $autos = $auto->listarAutos();
     <?php } ?>
 
 </body>
+
 </html>
