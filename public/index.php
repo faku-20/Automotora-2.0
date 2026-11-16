@@ -1,25 +1,47 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+$error = $_SESSION["error_login"] ?? "";
+unset($_SESSION["error_login"]);
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Automotora Pérez</title>
 </head>
 
 <body>
   <h1>Automotora Pérez</h1>
-  <?php
-  echo "Inicio de sesion" . "<br>";
-  ?>
+  <h2>Inicio de sesión</h2>
 
-  <form action="probarUsuario.php" method="post">
-    <label for="Usuario">Usuario:</label>
-    <input type="text" id="Usuario" name="usuario" required>
+  <?php if ($error !== ""): ?>
+    <p>
+      <?= htmlspecialchars($error, ENT_QUOTES, "UTF-8") ?>
+    </p>
+  <?php endif; ?>
 
-    <label for="contraseña">Contraseña:</label>
-    <input type="password" id="clave" name="clave" minlength="8" required>
+  <form action="probarUsuario.php" method="POST">
+    <label for="usuario">Usuario:</label>
+    <input
+      type="text"
+      id="usuario"
+      name="usuario"
+      required>
 
-    <button type="submit">Enviar</button>
+    <label for="clave">Contraseña:</label>
+    <input
+      type="password"
+      id="clave"
+      name="clave"
+      required>
+
+    <button type="submit">Iniciar sesión</button>
   </form>
 </body>
 

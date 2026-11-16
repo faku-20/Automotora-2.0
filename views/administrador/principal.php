@@ -21,6 +21,8 @@ if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
 <body>
     <h1>Bienvenido al panel de administración</h1>
 
+    <a href="/public/miPerfil.php">Mi perfil</a>
+    <br>
     <a href="/public/logout.php">Cerrar sesión</a>
 
     <h2>Panel de administración</h2>
@@ -30,8 +32,14 @@ if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
             <button type="button">Cargar automóvil</button>
         </a>
         <br>
+
         <a href="listarAutos.php">
             <button type="button">Listar automóviles</button>
+        </a>
+        <br>
+
+        <a href="/public/configurarFinanciacion.php">
+            Configurar financiación
         </a>
     </nav>
 </body>

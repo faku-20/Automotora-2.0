@@ -1,40 +1,55 @@
-
 <?php
-
-// ?? null , operador que evita si nadie inicio sesión. Tambíen si el rol no es comprador, lo manda a index.php
-if (($_SESSION["tipo_usuario"] ?? null) !== "comprador") {
-    header("Location: index.php");
-    exit;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
+// Verificamos que el usuario sea comprador
+if (($_SESSION["tipo_usuario"] ?? null) !== "comprador") {
+    header("Location: /public/index.php");
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel del comprador</title>
 </head>
+
 <body>
 
     <h1>Panel del comprador</h1>
 
-    <!-- saludo personalizado al usuario de sesión -->
-    <!-- htmlspelichars() protegiendo el texto contra ataques XSS -->
-    <h2>Bienvenido, <?= htmlspecialchars($_SESSION["usuario"]) ?></h2>
+    <h2>
+        Bienvenido,
+        <?= htmlspecialchars($_SESSION["usuario"] ?? "", ENT_QUOTES, "UTF-8") ?>
+    </h2>
 
-    <!-- lista con dos enlaces para el cliente, catalogo.php y logout.php -->
     <nav>
         <ul>
             <li>
-                <a href="verCatalogo.php">Ver catálogo de vehículos</a>
+                <a href="/public/verCatalogo.php">
+                    Ver catálogo de vehículos
+                </a>
             </li>
 
             <li>
-                <a href="logout.php">Cerrar sesión</a>
+                <a href="/public/miPerfil.php">
+                    Mi perfil
+                </a>
+            </li>
+
+            <li>
+                <a href="/public/logout.php">
+                    Cerrar sesión
+                </a>
             </li>
         </ul>
     </nav>
 
 </body>
+
 </html>

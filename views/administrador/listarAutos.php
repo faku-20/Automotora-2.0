@@ -22,10 +22,10 @@ isset comprueba si ya existe el array en la sesion, si no existe el array hacemo
 Despes utilizamos los autos almacenados en $_SESION["autos"]
 */
 
-if (!isset($_SESSION["autos"])) {
-    $_SESSION["autos"] = $auto->listarAutos();
-}
+// Actualizamos el arreglo desde MariaDB al abrir el listado.
+$_SESSION["autos"] = $auto->listarAutos();
 
+// La tabla utiliza el arreglo almacenado en sesión.
 $autos = $_SESSION["autos"];
 ?>
 

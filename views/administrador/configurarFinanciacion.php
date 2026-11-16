@@ -14,21 +14,34 @@ $financiacion = new Financiacion();
 $mensaje = "";
 $error = "";
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $tasa = trim($_POST["tasa"] ?? "");
+if (empty($_SESSION["csrf_financiacion"])) {
+    $_SESSION["csrf_financiacion"] = bin2hex(random_bytes(32));
+}
 
-    if (!is_numeric($tasa) || $tasa < 0 || $tasa > 100) {
-        $error = "Ingresá una tasa válida entre 0 y 100.";
-    } elseif ($financiacion->modificarTasa((float) $tasa)) {
-        $mensaje = "Tasa de interés actualizada correctamente.";
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $token = $_POST["csrf_token"] ?? "";
+
+    if (!is_string($token) ||
+        !hash_equals($_SESSION["csrf_financiacion"], $token)) {
+        $error = "Solicitud no válida.";
     } else {
-        $error = "No se pudo actualizar la tasa.";
+        $tasa = trim((string) ($_POST["tasa"] ?? ""));
+
+        if (!is_numeric($tasa) ||
+            !is_finite((float) $tasa) ||
+            (float) $tasa < 0 ||
+            (float) $tasa > 100) {
+            $error = "Ingresá una tasa entre 0 y 100.";
+        } elseif ($financiacion->modificarTasa((float) $tasa)) {
+            $mensaje = "Tasa actualizada correctamente.";
+        } else {
+            $error = "No se pudo actualizar la tasa.";
+        }
     }
 }
 
 $tasaActual = $financiacion->obtenerTasa();
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -36,12 +49,13 @@ $tasaActual = $financiacion->obtenerTasa();
     <title>Configurar financiación</title>
 </head>
 <body>
-
     <h1>Configuración de financiación</h1>
 
     <p>
-        Tasa de interés mensual actual:
-        <strong><?= htmlspecialchars((string) $tasaActual) ?>%</strong>
+        Tasa mensual actual:
+        <strong>
+            <?= htmlspecialchars((string) $tasaActual) ?>%
+        </strong>
     </p>
 
     <?php if ($mensaje): ?>
@@ -53,6 +67,12 @@ $tasaActual = $financiacion->obtenerTasa();
     <?php endif; ?>
 
     <form method="POST">
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="<?= htmlspecialchars($_SESSION["csrf_financiacion"]) ?>"
+        >
+
         <label for="tasa">Nueva tasa mensual (%):</label>
 
         <input
@@ -72,6 +92,5 @@ $tasaActual = $financiacion->obtenerTasa();
     <p>
         <a href="/public/panelAdmin.php">Volver al panel</a>
     </p>
-
 </body>
 </html>
