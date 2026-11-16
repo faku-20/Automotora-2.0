@@ -1,130 +1,3 @@
-
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Solo pueden acceder los compradores
-if (($_SESSION["tipo_usuario"] ?? null) !== "comprador") {
-    header("Location: /public/index.php");
-    exit;
-}
-
-require_once __DIR__ . '/../../models/Auto.php';
-require_once __DIR__ . '/../../models/Financiacion.php';
-
-// Buscar el automóvil seleccionado
-$id = filter_input(INPUT_GET, "id", FILTER_VALIDATE_INT);
-
-if (!$id || $id <= 0) {
-    echo "Debés seleccionar un automóvil válido.";
-    exit;
-}
-
-$auto = new Auto();
-$vehiculo = $auto->buscarAutoXID($id);
-
-if (!$vehiculo) {
-    echo "El automóvil seleccionado no existe.";
-    exit;
-}
-
-// Consultar la tasa configurada por el administrador
-$financiacion = new Financiacion();
-$tasaMensual = $financiacion->obtenerTasa();
-
-if ($tasaMensual === null) {
-    echo "No se pudo obtener la configuración de financiación.";
-    exit;
-}
-
-$precio = (float) $vehiculo["precio"];
-
-$error = "";
-$simulacionRealizada = false;
-
-$metodoPago = $_POST["metodo_pago"] ?? "tarjeta";
-$entregaIngresada = $_POST["entrega"] ?? "";
-$cuotasIngresadas = $_POST["cuotas"] ?? "";
-
-$entrega = 0;
-$cuotas = 0;
-$saldo = 0;
-$valorCuota = 0;
-$totalFinanciado = 0;
-$totalIntereses = 0;
-$totalCompra = 0;
-
-if (empty($_SESSION["csrf_simulacion"])) {
-    $_SESSION["csrf_simulacion"] = bin2hex(random_bytes(32));
-}
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    $token = $_POST["csrf_token"] ?? "";
-
-    if (
-        !is_string($token) ||
-        !hash_equals($_SESSION["csrf_simulacion"], $token)
-    ) {
-        $error = "Solicitud no válida.";
-
-    } elseif (
-        !is_string($metodoPago) ||
-        !in_array($metodoPago, ["tarjeta", "prestamo"], true)
-    ) {
-        $error = "Seleccioná un método de pago válido.";
-
-    } elseif (
-        !is_scalar($entregaIngresada) ||
-        !is_numeric($entregaIngresada) ||
-        !is_finite((float) $entregaIngresada) ||
-        (float) $entregaIngresada < 0 ||
-        (float) $entregaIngresada > $precio
-    ) {
-        $error = "Ingresá una entrega inicial válida.";
-
-    } elseif (
-        !is_scalar($cuotasIngresadas) ||
-        !ctype_digit((string) $cuotasIngresadas) ||
-        (float) $cuotasIngresadas < 1 ||
-        (float) $cuotasIngresadas >
-            ($metodoPago === "tarjeta" ? 12 : 100)
-    ) {
-        $error = "La cantidad de cuotas no es válida para el método seleccionado.";
-
-    } else {
-        $entrega = (float) $entregaIngresada;
-        $cuotas = (int) $cuotasIngresadas;
-
-        $saldo = $precio - $entrega;
-
-        if ($metodoPago === "tarjeta") {
-            // Hasta 12 cuotas sin intereses
-            $valorCuota = $saldo / $cuotas;
-
-        } else {
-            // Préstamo: sistema de amortización francés
-            $tasa = $tasaMensual / 100;
-
-            if ($tasa == 0) {
-                $valorCuota = $saldo / $cuotas;
-            } else {
-                $factor = pow(1 + $tasa, -$cuotas);
-
-                $valorCuota = ($saldo * $tasa) / (1 - $factor);
-            }
-        }
-
-        $totalFinanciado = $valorCuota * $cuotas;
-        $totalIntereses = max(0, $totalFinanciado - $saldo);
-        $totalCompra = $entrega + $totalFinanciado;
-
-        $simulacionRealizada = true;
-    }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -146,12 +19,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <h2>Datos de financiación</h2>
 
-    <form method="POST">
+    <form action="index.php?ruta=simular-compra&amp;id=<?= (int) $id ?>" method="POST">
 
         <input
             type="hidden"
             name="csrf_token"
-            value="<?= htmlspecialchars($_SESSION["csrf_simulacion"]) ?>"
+            value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, "UTF-8") ?>"
         >
 
         <label for="metodo_pago">Método de pago:</label>
@@ -280,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     <br>
 
-    <a href="/public/verCatalogo.php">Volver al catálogo</a>
+    <a href="index.php?ruta=catalogo">Volver al catálogo</a>
 
     <script>
         const metodoPago = document.getElementById("metodo_pago");

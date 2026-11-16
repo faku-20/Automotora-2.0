@@ -1,14 +1,3 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Verificamos que el usuario sea administrador
-if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
-    header("Location: /public/index.php");
-    exit;
-}
-?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -21,24 +10,26 @@ if (($_SESSION["tipo_usuario"] ?? null) !== "administrador") {
 <body>
     <h1>Bienvenido al panel de administración</h1>
 
-    <a href="/public/miPerfil.php">Mi perfil</a>
-    <br>
-    <a href="/public/logout.php">Cerrar sesión</a>
+    <a href="index.php?ruta=perfil">Mi perfil</a>
+    <form action="index.php?ruta=logout" method="POST">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfLogout, ENT_QUOTES, "UTF-8") ?>">
+        <button type="submit">Cerrar sesión</button>
+    </form>
 
     <h2>Panel de administración</h2>
 
     <nav>
-        <a href="cargarAuto.php">
+        <a href="index.php?ruta=auto-cargar">
             <button type="button">Cargar automóvil</button>
         </a>
         <br>
 
-        <a href="listarAutos.php">
+        <a href="index.php?ruta=autos">
             <button type="button">Listar automóviles</button>
         </a>
         <br>
 
-        <a href="/public/configurarFinanciacion.php">
+        <a href="index.php?ruta=financiacion">
             Configurar financiación
         </a>
     </nav>

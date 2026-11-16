@@ -18,11 +18,18 @@ class Financiacion
                 FROM configuracion_financiacion
                 WHERE id = 1";
 
-        $resultado = $this->conexion->query($sql);
+        $consulta = $this->conexion->prepare($sql);
+        if (!$consulta || !$consulta->execute()) {
+            return null;
+        }
 
+        $resultado = $consulta->get_result();
         if ($resultado && $fila = $resultado->fetch_assoc()) {
+            $consulta->close();
             return (float) $fila["tasa_interes_mensual"];
         }
+
+        $consulta->close();
 
         return null;
     }
@@ -45,6 +52,8 @@ class Financiacion
 
         $stmt->bind_param("d", $tasa);
 
-        return $stmt->execute();
+        $resultado = $stmt->execute();
+        $stmt->close();
+        return $resultado;
     }
 }

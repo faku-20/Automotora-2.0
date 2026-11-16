@@ -1,15 +1,3 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Verificamos que el usuario sea comprador
-if (($_SESSION["tipo_usuario"] ?? null) !== "comprador") {
-    header("Location: /public/index.php");
-    exit;
-}
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -31,21 +19,22 @@ if (($_SESSION["tipo_usuario"] ?? null) !== "comprador") {
     <nav>
         <ul>
             <li>
-                <a href="/public/verCatalogo.php">
+                <a href="index.php?ruta=catalogo">
                     Ver catálogo de vehículos
                 </a>
             </li>
 
             <li>
-                <a href="/public/miPerfil.php">
+                <a href="index.php?ruta=perfil">
                     Mi perfil
                 </a>
             </li>
 
             <li>
-                <a href="/public/logout.php">
-                    Cerrar sesión
-                </a>
+                <form action="index.php?ruta=logout" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfLogout, ENT_QUOTES, "UTF-8") ?>">
+                    <button type="submit">Cerrar sesión</button>
+                </form>
             </li>
         </ul>
     </nav>
