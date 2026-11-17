@@ -16,6 +16,7 @@ class CompradorController
     public function catalogo(): void
     {
         requiereRol("comprador");
+        $csrfLogout = tokenCsrf("csrf_logout");
         $auto = new Auto();
         $autos = $auto->listarAutos();
         require __DIR__ . "/../views/comprador/listarAutos.php";
@@ -24,6 +25,7 @@ class CompradorController
     public function simularCompra(): void
     {
         requiereRol("comprador");
+        $csrfLogout = tokenCsrf("csrf_logout");
         $id = idPositivo($_GET["id"] ?? null);
         if ($id === null) {
             redirigir("catalogo");

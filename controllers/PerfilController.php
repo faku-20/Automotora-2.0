@@ -13,6 +13,7 @@ class PerfilController
         }
 
         $usuario = new Usuario();
+        $csrfLogout = tokenCsrf("csrf_logout");
         $datos = $usuario->buscarUsuario($_SESSION["usuario"]);
         if (!$datos || (int) $datos["id"] !== (int) $_SESSION["id"]) {
             http_response_code(403);

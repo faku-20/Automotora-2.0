@@ -16,6 +16,7 @@ class AdministradorController
     public function listarAutos(): void
     {
         requiereRol("administrador");
+        $csrfLogout = tokenCsrf("csrf_logout");
         $auto = new Auto();
 
         // La sesión conserva la colección utilizada por el foreach de la vista
@@ -31,6 +32,7 @@ class AdministradorController
     public function cargarAuto(): void
     {
         requiereRol("administrador");
+        $csrfLogout = tokenCsrf("csrf_logout");
         $auto = new Auto();
         $error = "";
         $csrfToken = tokenCsrf("csrf_autos");
@@ -58,6 +60,7 @@ class AdministradorController
     public function modificarAuto(): void
     {
         requiereRol("administrador");
+        $csrfLogout = tokenCsrf("csrf_logout");
         $id = idPositivo($_GET["id"] ?? null);
         if ($id === null) {
             http_response_code(400);
@@ -129,6 +132,7 @@ class AdministradorController
     public function configurarFinanciacion(): void
     {
         requiereRol("administrador");
+        $csrfLogout = tokenCsrf("csrf_logout");
         $financiacion = new Financiacion();
         $mensaje = "";
         $error = "";

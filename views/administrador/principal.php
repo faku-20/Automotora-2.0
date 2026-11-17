@@ -1,38 +1,18 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de administración - Automotora</title>
-</head>
-
-<body>
-    <h1>Bienvenido al panel de administración</h1>
-
-    <a href="index.php?ruta=perfil">Mi perfil</a>
-    <form action="index.php?ruta=logout" method="POST">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfLogout, ENT_QUOTES, "UTF-8") ?>">
-        <button type="submit">Cerrar sesión</button>
-    </form>
-
-    <h2>Panel de administración</h2>
-
-    <nav>
-        <a href="index.php?ruta=auto-cargar">
-            <button type="button">Cargar automóvil</button>
-        </a>
-        <br>
-
-        <a href="index.php?ruta=autos">
-            <button type="button">Listar automóviles</button>
-        </a>
-        <br>
-
-        <a href="index.php?ruta=financiacion">
-            Configurar financiación
-        </a>
-    </nav>
-</body>
-
-</html>
+<?php
+$tituloPagina = "Panel de administración";
+$seccionActual = "admin";
+require __DIR__ . "/../layouts/header.php";
+?>
+<section class="hero-panel" aria-labelledby="admin-title">
+    <p class="eyebrow">Administración</p>
+    <h1 id="admin-title">Gestión clara para cada vehículo.</h1>
+    <p>Centralizá el inventario y la financiación de la automotora desde un mismo lugar.</p>
+    <a class="button button-primary" href="index.php?ruta=auto-cargar">Cargar automóvil</a>
+</section>
+<section class="dashboard-grid" aria-label="Accesos de administración">
+    <a class="action-card" href="index.php?ruta=autos"><span class="card-index">01</span><h2>Vehículos</h2><p>Consultá, modificá o eliminá el inventario actual.</p><span class="card-link">Ver inventario</span></a>
+    <a class="action-card" href="index.php?ruta=auto-cargar"><span class="card-index">02</span><h2>Cargar automóvil</h2><p>Incorporá un vehículo con sus datos esenciales.</p><span class="card-link">Nueva carga</span></a>
+    <a class="action-card" href="index.php?ruta=financiacion"><span class="card-index">03</span><h2>Financiación</h2><p>Definí la tasa mensual para los préstamos.</p><span class="card-link">Configurar tasa</span></a>
+    <a class="action-card" href="index.php?ruta=perfil"><span class="card-index">04</span><h2>Mi perfil</h2><p>Revisá tus datos personales y seguridad.</p><span class="card-link">Administrar cuenta</span></a>
+</section>
+<?php require __DIR__ . "/../layouts/footer.php"; ?>
