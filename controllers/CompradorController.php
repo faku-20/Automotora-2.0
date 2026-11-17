@@ -65,12 +65,16 @@ class CompradorController
                 $error = "Solicitud no válida.";
             } elseif (!is_string($metodoPago) || !in_array($metodoPago, ["tarjeta", "prestamo"], true)) {
                 $error = "Seleccioná un método de pago válido.";
-            } elseif (!is_scalar($entregaIngresada) || !is_numeric($entregaIngresada)
+            } elseif (
+                !is_scalar($entregaIngresada) || !is_numeric($entregaIngresada)
                 || !is_finite((float) $entregaIngresada) || (float) $entregaIngresada < 0
-                || (float) $entregaIngresada > $precio) {
+                || (float) $entregaIngresada > $precio
+            ) {
                 $error = "Ingresá una entrega inicial válida.";
-            } elseif (!is_scalar($cuotasIngresadas) || !ctype_digit((string) $cuotasIngresadas)
-                || (int) $cuotasIngresadas < 1 || (int) $cuotasIngresadas > ($metodoPago === "tarjeta" ? 12 : 100)) {
+            } elseif (
+                !is_scalar($cuotasIngresadas) || !ctype_digit((string) $cuotasIngresadas)
+                || (int) $cuotasIngresadas < 1 || (int) $cuotasIngresadas > ($metodoPago === "tarjeta" ? 12 : 100)
+            ) {
                 $error = "La cantidad de cuotas no es válida para el método seleccionado.";
             } else {
                 $entrega = (float) $entregaIngresada;

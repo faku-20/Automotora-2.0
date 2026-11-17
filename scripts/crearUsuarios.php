@@ -65,7 +65,6 @@ try {
         if ($buscar->num_rows > 0) {
 
             $existentes++;
-
         } else {
 
             // Generar el hash de la contraseña
@@ -104,11 +103,7 @@ try {
     $buscar->close();
     $insertar->close();
     $conexion->close();
-
 } catch (Throwable $e) {
 
     echo "Error al cargar los usuarios: " . $e->getMessage();
-
 }
-
-?>

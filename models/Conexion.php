@@ -1,8 +1,10 @@
 <?php
 
-class Conexion {
+class Conexion
+{
 
-    public function conectar() {
+    public function conectar()
+    {
 
         // Leer las credenciales del archivo .env
         $config = parse_ini_file(__DIR__ . '/../.env');

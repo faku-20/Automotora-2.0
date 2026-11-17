@@ -1,4 +1,10 @@
 <?php
+/**
+ * Variables provistas por UsuarioController::mostrarInicio() antes del require.
+ * Se anotan para que el IDE reconozca el alcance compartido de PHP sin modificar el flujo de la vista. sino tira error
+ * @var string $csrfToken
+ * @var string $error
+ */
 $tituloPagina = "Iniciar sesión";
 $seccionActual = "inicio";
 require __DIR__ . "/../layouts/header.php";

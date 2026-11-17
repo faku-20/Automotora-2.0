@@ -142,8 +142,10 @@ class AdministradorController
             $tasa = $_POST["tasa"] ?? null;
             if (!csrfValido("csrf_financiacion", $_POST["csrf_token"] ?? null)) {
                 $error = "Solicitud no válida.";
-            } elseif (!is_string($tasa) || !is_numeric($tasa) || !is_finite((float) $tasa)
-                || (float) $tasa < 0 || (float) $tasa > 100) {
+            } elseif (
+                !is_string($tasa) || !is_numeric($tasa) || !is_finite((float) $tasa)
+                || (float) $tasa < 0 || (float) $tasa > 100
+            ) {
                 $error = "Ingresá una tasa entre 0 y 100.";
             } elseif ($financiacion->modificarTasa((float) $tasa)) {
                 $mensaje = "Tasa actualizada correctamente.";
