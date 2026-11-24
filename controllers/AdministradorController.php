@@ -191,4 +191,8 @@ class AdministradorController
 
         return [$marca, $modelo, (int) $anio, $color, (int) $kilometros, (float) $precio];
     }
+
+    public function cargarUsuarioXDefecto(){
+        
+    }
 }
