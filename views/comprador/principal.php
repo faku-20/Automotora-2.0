@@ -9,7 +9,7 @@ $seccionActual = "comprador";
 require __DIR__ . "/../layouts/header.php";
 ?>
 <section class="hero-panel buyer-hero">
-    <p class="eyebrow">Bienvenido, <?= htmlspecialchars($_SESSION["usuario"] ?? "", ENT_QUOTES, "UTF-8") ?></p>
+    <p class="eyebrow">Bienvenido, <?= htmlspecialchars((string) App::obtener(App::USUARIO_NOMBRE, ""), ENT_QUOTES, "UTF-8") ?></p>
     <h1>Encontrá el vehículo que acompaña tu próximo paso.</h1>
     <p>Explorá el catálogo y simulá alternativas de financiación de forma simple.</p><a class="button button-primary" href="index.php?ruta=catalogo">Ver catálogo</a>
 </section>

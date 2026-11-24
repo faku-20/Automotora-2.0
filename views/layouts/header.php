@@ -1,7 +1,7 @@
 <?php
 $tituloPagina = $tituloPagina ?? "Automotora 2.0";
 $seccionActual = $seccionActual ?? "";
-$rolNavegacion = $_SESSION["tipo_usuario"] ?? "";
+$rolNavegacion = App::obtener(App::USUARIO_ROL, "");
 ?>
 <!DOCTYPE html>
 <html lang="es">

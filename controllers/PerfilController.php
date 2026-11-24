@@ -7,15 +7,17 @@ class PerfilController
 {
     public function mostrar(): void
     {
-        $rol = $_SESSION["tipo_usuario"] ?? "";
-        if (!isset($_SESSION["id"], $_SESSION["usuario"]) || !in_array($rol, ["administrador", "comprador"], true)) {
+        $rol = App::obtener(App::USUARIO_ROL, "");
+        $idUsuario = App::obtener(App::USUARIO_ID);
+        $nombreUsuario = App::obtener(App::USUARIO_NOMBRE);
+        if (!is_int($idUsuario) || !is_string($nombreUsuario) || !in_array($rol, ["administrador", "comprador"], true)) {
             redirigir("inicio");
         }
 
         $usuario = new Usuario();
         $csrfLogout = tokenCsrf("csrf_logout");
-        $datos = $usuario->buscarUsuario($_SESSION["usuario"]);
-        if (!$datos || (int) $datos["id"] !== (int) $_SESSION["id"]) {
+        $datos = $usuario->buscarUsuario($nombreUsuario);
+        if (!$datos || (int) $datos["id"] !== $idUsuario) {
             http_response_code(403);
             exit("No se pudo verificar el usuario.");
         }
@@ -44,11 +46,11 @@ class PerfilController
                     $error = "La nueva contraseña debe tener al menos 8 caracteres.";
                 } elseif ($nuevaClave !== "" && !password_verify($claveActual, $datos["password"])) {
                     $error = "La contraseña actual es incorrecta.";
-                } elseif ($usuario->modificarPerfil((int) $_SESSION["id"], $nombre, $apellido, $nuevaClave)) {
+                } elseif ($usuario->modificarPerfil($idUsuario, $nombre, $apellido, $nuevaClave)) {
                     $mensaje = "Perfil actualizado correctamente.";
-                    $datos = $usuario->buscarUsuario($_SESSION["usuario"]);
-                    $_SESSION["csrf_perfil"] = bin2hex(random_bytes(32));
-                    $csrfToken = $_SESSION["csrf_perfil"];
+                    $datos = $usuario->buscarUsuario($nombreUsuario);
+                    $csrfToken = bin2hex(random_bytes(32));
+                    App::guardar("csrf_perfil", $csrfToken);
                 } else {
                     $error = "No se pudo actualizar el perfil.";
                 }

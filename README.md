@@ -21,6 +21,7 @@ models/       Acceso a MariaDB mediante MySQLi
 views/        HTML de cada pantalla
 database/     Script de estructura/datos de referencia
 scripts/      Utilidades de desarrollo
+app/          Estado compartido de la aplicación (sesión y sus claves)
 ```
 
 `public/index.php` es el único punto de entrada HTTP. El parámetro `ruta` se valida contra una lista cerrada; las escrituras sólo aceptan POST.

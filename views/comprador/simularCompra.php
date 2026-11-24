@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Variables provistas por CompradorController::simularCompra() antes del require.
  * Estas anotaciones describen el alcance compartido de PHP y sólo corrigen falsos positivos del IDE.

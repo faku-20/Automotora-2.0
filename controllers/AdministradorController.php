@@ -19,12 +19,12 @@ class AdministradorController
         $csrfLogout = tokenCsrf("csrf_logout");
         $auto = new Auto();
 
-        // La sesión conserva la colección utilizada por el foreach de la vista
+        // App conserva la colección utilizada por el foreach de la vista
         // y se sincroniza con MariaDB cada vez que se abre el listado.
-        $_SESSION["autos"] = $auto->listarAutos();
+        App::guardar(App::AUTOS, $auto->listarAutos());
         $csrfToken = tokenCsrf("csrf_autos");
-        $mensaje = $_SESSION["mensaje"] ?? "";
-        unset($_SESSION["mensaje"]);
+        $mensaje = App::obtener(App::MENSAJE, "");
+        App::eliminar(App::MENSAJE);
 
         require __DIR__ . "/../views/administrador/listarAutos.php";
     }
@@ -45,8 +45,8 @@ class AdministradorController
                 if (is_string($datos)) {
                     $error = $datos;
                 } elseif ($auto->cargarAuto(...$datos)) {
-                    unset($_SESSION["autos"]);
-                    $_SESSION["mensaje"] = "El automóvil fue cargado correctamente.";
+                    App::eliminar(App::AUTOS);
+                    App::guardar(App::MENSAJE, "El automóvil fue cargado correctamente.");
                     redirigir("autos");
                 } else {
                     $error = "No se pudo cargar el automóvil.";
@@ -84,8 +84,8 @@ class AdministradorController
                 if (is_string($nuevosDatos)) {
                     $error = $nuevosDatos;
                 } elseif ($auto->modificarAuto($id, ...$nuevosDatos)) {
-                    unset($_SESSION["autos"]);
-                    $_SESSION["mensaje"] = "El automóvil fue modificado correctamente.";
+                    App::eliminar(App::AUTOS);
+                    App::guardar(App::MENSAJE, "El automóvil fue modificado correctamente.");
                     redirigir("autos");
                 } else {
                     $error = "No se pudo modificar el automóvil.";
@@ -124,8 +124,8 @@ class AdministradorController
             exit("No se pudo eliminar el auto.");
         }
 
-        unset($_SESSION["autos"]);
-        $_SESSION["mensaje"] = "El automóvil fue eliminado correctamente.";
+        App::eliminar(App::AUTOS);
+        App::guardar(App::MENSAJE, "El automóvil fue eliminado correctamente.");
         redirigir("autos");
     }
 

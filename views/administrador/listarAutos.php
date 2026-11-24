@@ -8,6 +8,7 @@
  */
 $tituloPagina = "Vehículos";
 $seccionActual = "autos";
+$autos = App::obtener(App::AUTOS, []);
 require __DIR__ . "/../layouts/header.php";
 ?>
 <section class="page-heading">
@@ -20,8 +21,8 @@ require __DIR__ . "/../layouts/header.php";
 </section>
 <?php if ($mensaje !== ""): ?><div class="alert alert-success" role="status"><?= htmlspecialchars($mensaje, ENT_QUOTES, "UTF-8") ?></div><?php endif; ?>
 <section class="content-card table-card">
-    <div class="table-caption"><span><?= count($_SESSION["autos"]) ?> vehículo<?= count($_SESSION["autos"]) === 1 ? "" : "s" ?> en inventario</span><span>Datos sincronizados con MariaDB</span></div>
-    <?php if (empty($_SESSION["autos"])): ?>
+    <div class="table-caption"><span><?= count($autos) ?> vehículo<?= count($autos) === 1 ? "" : "s" ?> en inventario</span><span>Datos sincronizados con MariaDB</span></div>
+    <?php if (empty($autos)): ?>
         <div class="empty-state">
             <h2>No hay vehículos cargados</h2>
             <p>Comenzá agregando el primer automóvil al inventario.</p><a class="button button-primary" href="index.php?ruta=auto-cargar">Cargar automóvil</a>
@@ -41,7 +42,7 @@ require __DIR__ . "/../layouts/header.php";
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($_SESSION["autos"] as $autito): ?>
+                    <?php foreach ($autos as $autito): ?>
                         <tr>
                             <td><?= htmlspecialchars((string) $autito["marca"], ENT_QUOTES, "UTF-8") ?></td>
                             <td><?= htmlspecialchars((string) $autito["modelo"], ENT_QUOTES, "UTF-8") ?></td>

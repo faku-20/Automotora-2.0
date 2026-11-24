@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . "/../app/App.php";
+
 /** Funciones compartidas por los controladores del proyecto. */
 function iniciarSesionSegura(): void
 {
@@ -28,26 +30,27 @@ function redirigir(string $ruta, array $parametros = []): never
 
 function requiereRol(string $rol): void
 {
-    if (($_SESSION["tipo_usuario"] ?? null) !== $rol) {
+    if (App::obtener(App::USUARIO_ROL) !== $rol) {
         redirigir("inicio");
     }
 }
 
 function tokenCsrf(string $nombre): string
 {
-    if (empty($_SESSION[$nombre])) {
-        $_SESSION[$nombre] = bin2hex(random_bytes(32));
+    $token = App::obtener($nombre);
+    if (!is_string($token) || $token === "") {
+        $token = bin2hex(random_bytes(32));
+        App::guardar($nombre, $token);
     }
 
-    return $_SESSION[$nombre];
+    return $token;
 }
 
 function csrfValido(string $nombre, mixed $token): bool
 {
     return is_string($token)
-        && isset($_SESSION[$nombre])
-        && is_string($_SESSION[$nombre])
-        && hash_equals($_SESSION[$nombre], $token);
+        && is_string(App::obtener($nombre))
+        && hash_equals(App::obtener($nombre), $token);
 }
 
 function idPositivo(mixed $valor): ?int

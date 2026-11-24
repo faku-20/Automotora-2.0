@@ -14,7 +14,7 @@ class UsuarioController
         }
 
         if (!csrfValido("csrf_login", $_POST["csrf_token"] ?? null)) {
-            $_SESSION["error_login"] = "Solicitud no válida.";
+            App::guardar(App::ERROR_LOGIN, "Solicitud no válida.");
             redirigir("inicio");
         }
 
@@ -27,7 +27,7 @@ class UsuarioController
             trim($usuarioIngresado) === "" ||
             $claveIngresada === ""
         ) {
-            $_SESSION["error_login"] = "Ingresá usuario y contraseña.";
+            App::guardar(App::ERROR_LOGIN, "Ingresá usuario y contraseña.");
             redirigir("inicio");
         }
 
@@ -38,7 +38,7 @@ class UsuarioController
         );
 
         if (!$resultado) {
-            $_SESSION["error_login"] = "Usuario o contraseña incorrectos.";
+            App::guardar(App::ERROR_LOGIN, "Usuario o contraseña incorrectos.");
             redirigir("inicio");
         }
 
@@ -47,7 +47,7 @@ class UsuarioController
             ["administrador", "comprador"],
             true
         )) {
-            $_SESSION["error_login"] = "Tipo de usuario no válido.";
+            App::guardar(App::ERROR_LOGIN, "Tipo de usuario no válido.");
             redirigir("inicio");
         }
 
@@ -55,11 +55,11 @@ class UsuarioController
         session_regenerate_id(true);
 
         // Evitamos conservar datos de una sesión anterior.
-        unset($_SESSION["autos"], $_SESSION["csrf_autos"], $_SESSION["csrf_perfil"], $_SESSION["csrf_financiacion"], $_SESSION["csrf_simulacion"], $_SESSION["csrf_login"]);
+        App::eliminar(App::AUTOS, "csrf_autos", "csrf_perfil", "csrf_financiacion", "csrf_simulacion", "csrf_login");
 
-        $_SESSION["id"] = (int) $resultado["id"];
-        $_SESSION["usuario"] = $resultado["usuario"];
-        $_SESSION["tipo_usuario"] = $resultado["tipo_usuario"];
+        App::guardar(App::USUARIO_ID, (int) $resultado["id"]);
+        App::guardar(App::USUARIO_NOMBRE, $resultado["usuario"]);
+        App::guardar(App::USUARIO_ROL, $resultado["tipo_usuario"]);
 
         if ($resultado["tipo_usuario"] === "administrador") {
             redirigir("admin");
@@ -70,15 +70,15 @@ class UsuarioController
 
     public function mostrarInicio(): void
     {
-        if (($_SESSION["tipo_usuario"] ?? null) === "administrador") {
+        if (App::obtener(App::USUARIO_ROL) === "administrador") {
             redirigir("admin");
         }
-        if (($_SESSION["tipo_usuario"] ?? null) === "comprador") {
+        if (App::obtener(App::USUARIO_ROL) === "comprador") {
             redirigir("comprador");
         }
 
-        $error = $_SESSION["error_login"] ?? "";
-        unset($_SESSION["error_login"]);
+        $error = App::obtener(App::ERROR_LOGIN, "");
+        App::eliminar(App::ERROR_LOGIN);
         $csrfToken = tokenCsrf("csrf_login");
         require __DIR__ . "/../views/usuarios/inicio.php";
     }
@@ -94,7 +94,7 @@ class UsuarioController
             exit("Solicitud no válida.");
         }
 
-        $_SESSION = [];
+        App::vaciarSesion();
         session_destroy();
         redirigir("inicio");
     }
