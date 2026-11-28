@@ -96,6 +96,9 @@ require __DIR__ . "/../layouts/header.php";
                     </div>
                 </dl>
                 <p class="result-note">Esta es una simulación orientativa, no una oferta de crédito.</p>
+                <div class="form-actions">
+                    <a class="button button-primary" href="index.php?ruta=contacto">Contactar al vendedor</a>
+                </div>
             </section><?php endif; ?>
     </section>
 </section>

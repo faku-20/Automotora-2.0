@@ -1,0 +1,9 @@
+{
+    "name": "automotora/automotora",
+    "description": "Aplicación web de gestión de automotora desarrollada en PHP",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "phpmailer/phpmailer": "^6.9"
+    }
+}

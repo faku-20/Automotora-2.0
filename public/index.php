@@ -5,6 +5,7 @@ require_once __DIR__ . "/../controllers/UsuarioController.php";
 require_once __DIR__ . "/../controllers/AdministradorController.php";
 require_once __DIR__ . "/../controllers/CompradorController.php";
 require_once __DIR__ . "/../controllers/PerfilController.php";
+require_once __DIR__ . "/../controllers/ContactoController.php";
 
 iniciarSesionSegura();
 
@@ -18,6 +19,7 @@ $usuario = new UsuarioController();
 $administrador = new AdministradorController();
 $comprador = new CompradorController();
 $perfil = new PerfilController();
+$contacto = new ContactoController();
 
 // Lista cerrada de rutas: index.php es el único punto de entrada HTTP.
 $rutas = [
@@ -33,6 +35,8 @@ $rutas = [
   "comprador" => ["GET", [$comprador, "panel"]],
   "catalogo" => ["GET", [$comprador, "catalogo"]],
   "simular-compra" => [["GET", "POST"], [$comprador, "simularCompra"]],
+  "contacto" => ["GET", [$contacto, "formulario"]],
+  "contacto-enviar" => ["POST", [$contacto, "enviar"]],
   "perfil" => [["GET", "POST"], [$perfil, "mostrar"]],
 ];
 

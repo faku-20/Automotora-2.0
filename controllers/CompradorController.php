@@ -59,6 +59,8 @@ class CompradorController
         $totalIntereses = 0.0;
         $totalCompra = 0.0;
         $csrfToken = tokenCsrf("csrf_simulacion");
+        // Cada nueva visita o intento de simulación invalida una simulación anterior.
+        App::eliminar(App::SIMULACION_CONTACTO);
 
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (!csrfValido("csrf_simulacion", $_POST["csrf_token"] ?? null)) {
@@ -96,6 +98,25 @@ class CompradorController
                 $totalIntereses = max(0, $totalFinanciado - $saldo);
                 $totalCompra = $entrega + $totalFinanciado;
                 $simulacionRealizada = true;
+
+                // Guardamos en sesión los datos de esta simulación para usarlos
+                // al abrir el formulario de contacto, sin confiar en datos del navegador.
+                App::guardar(App::SIMULACION_CONTACTO, [
+                    "auto" => [
+                        "id" => (int) $vehiculo["id"],
+                        "marca" => (string) $vehiculo["marca"],
+                        "modelo" => (string) $vehiculo["modelo"],
+                        "anio" => (int) $vehiculo["anio"],
+                        "precio" => $precio,
+                    ],
+                    "metodo_pago" => $metodoPago,
+                    "entrega" => $entrega,
+                    "cuotas" => $cuotas,
+                    "saldo" => $saldo,
+                    "valor_cuota" => $valorCuota,
+                    "total_intereses" => $totalIntereses,
+                    "total_compra" => $totalCompra,
+                ]);
             }
         }
 

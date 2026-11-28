@@ -9,6 +9,7 @@ final class App
     public const AUTOS = "autos";
     public const MENSAJE = "mensaje";
     public const ERROR_LOGIN = "error_login";
+    public const SIMULACION_CONTACTO = "simulacion_contacto";
 
     private function __construct()
     {

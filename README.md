@@ -40,6 +40,34 @@ app/          Estado compartido de la aplicación (sesión y sus claves)
 | `?ruta=financiacion` | GET, POST | Configuración de tasa |
 | `?ruta=catalogo` | GET | Catálogo del comprador |
 | `?ruta=simular-compra&id=N` | GET, POST | Simulación de financiación |
+| `?ruta=contacto` | GET | Formulario de contacto posterior a la simulación |
+| `?ruta=contacto-enviar` | POST | Validación y envío de la solicitud a Mailtrap |
 | `?ruta=perfil` | GET, POST | Perfil y cambio opcional de contraseña |
 
 El listado de administración sincroniza `$_SESSION["autos"]` desde MariaDB y la vista lo recorre con `foreach`.
+
+## Configuración de correo de prueba (Mailtrap)
+
+La opción **Contactar al vendedor** aparece después de realizar una simulación de compra. El formulario se abre en una nueva pantalla del sistema y envía la solicitud a un inbox de Mailtrap Email Testing. Es una integración ficticia: no se envía correo a un vendedor real.
+
+1. Instalar las dependencias desde la raíz del proyecto:
+
+   ```bash
+   composer install
+   ```
+
+2. Crear el archivo `.env` a partir de `.env.example` y completar los datos de la base de datos y las credenciales SMTP del inbox de Mailtrap:
+
+   ```ini
+   MAIL_HOST=sandbox.smtp.mailtrap.io
+   MAIL_PORT=2525
+   MAIL_USERNAME=usuario_smtp
+   MAIL_PASSWORD=clave_smtp
+   MAIL_FROM_ADDRESS=pruebas@automotora.local
+   MAIL_FROM_NAME="Automotora 2.0"
+   MAIL_TO_ADDRESS=automotora@prueba.local
+   ```
+
+3. No subir `.env` ni la carpeta `vendor/` al repositorio. `.env.example` contiene únicamente nombres de variables y valores de ejemplo.
+
+La ruta `contacto` muestra el formulario y `contacto-enviar` procesa el envío. Ambas rutas están protegidas para usuarios con rol `comprador`; el envío utiliza POST y token CSRF. Los datos de la simulación se conservan en la sesión y se incluyen en el correo.
